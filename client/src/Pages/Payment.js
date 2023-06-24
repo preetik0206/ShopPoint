@@ -33,37 +33,29 @@ const PaymentMethod = ({ history }) => {
     <FormContainer>
       <CheckoutSteps step1 step2 />
       <h1>Payment Method</h1>
-      <Form onSubmit={submitHandler}>
-        <FormControl component="fieldset">
-          <FormLabel component="legend">Select Method</FormLabel>
-          <Row>
-            <Col md="8">
-              <RadioGroup
-                aria-label="paymemtMethod"
-                name="paymemtMethod"
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-              >
-                <FormControlLabel value="PayPal" control={<Radio color="primary" />} label="PayPal or Credit Card" />
-              </RadioGroup>
-            </Col>
-            <Col md="4">
-              <RadioGroup
-                aria-label="paymemtMethod"
-                name="paymemtMethod"
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-              >
-                <FormControlLabel value="esewa" control={<Radio color="primary" />} label="Esewa" />
-              </RadioGroup>
-            </Col>
-          </Row>
-        </FormControl>
+      <div style={{ textAlign: 'center' }}>
+        <Form onSubmit={submitHandler}>
+          <FormControl component="fieldset">
+            <FormLabel component="legend">Select Method</FormLabel>
+            <Row>
+              <Col md="8">
+                <RadioGroup
+                  aria-label="paymemtMethod"
+                  name="paymemtMethod"
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                >
+                  <FormControlLabel value="PayPal" control={<Radio color="primary" />} label={<span style={{ whiteSpace: 'nowrap' }}>PayPal or Credit Card</span>} />
+                </RadioGroup>
+              </Col>
+            </Row>
+          </FormControl>
 
-        <Button type="submit" variant="contained" color="primary" fullWidth>
-          Continue
-        </Button>
-      </Form>
+          <Button type="submit" variant="contained" color="primary" fullWidth>
+            Continue
+          </Button>
+        </Form>
+      </div>
     </FormContainer>
   );
 };
