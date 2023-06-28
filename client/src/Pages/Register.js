@@ -37,7 +37,7 @@ const Register = ({ location, history }) => {
     if (success) {
       setTimeout(() => {
         history.push({
-          pathname: routes.EMAIL_VERIFICATION,
+          pathname: routes.LOGIN,
           search: `?redirect=${redirect}`,
         });
       }, 5000);

@@ -32,30 +32,38 @@ const PaymentMethod = ({ history }) => {
   return (
     <FormContainer>
       <CheckoutSteps step1 step2 />
-      <h1>Payment Method</h1>
-      <div style={{ textAlign: 'center' }}>
-        <Form onSubmit={submitHandler}>
-          <FormControl component="fieldset">
-            <FormLabel component="legend">Select Method</FormLabel>
-            <Row>
-              <Col md="8">
-                <RadioGroup
-                  aria-label="paymemtMethod"
-                  name="paymemtMethod"
-                  value={paymentMethod}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                >
-                  <FormControlLabel value="PayPal" control={<Radio color="primary" />} label={<span style={{ whiteSpace: 'nowrap' }}>PayPal or Credit Card</span>} />
-                </RadioGroup>
-              </Col>
-            </Row>
-          </FormControl>
+      <h1 style={{ textAlign : 'center' }} >Payment Method</h1>
+      <Form onSubmit={submitHandler}>
+        <FormControl component="fieldset">
+          <FormLabel component="legend" style={{ textAlign : 'center' }} >Select Method</FormLabel>
+          <Row>
+            <Col md="8">
+              <RadioGroup
+                aria-label="paymemtMethod"
+                name="paymemtMethod"
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+              >
+                <FormControlLabel style={{ marginRight: 0}} value="PayPal" control={<Radio color="primary" />} label="Razorpay" />
+              </RadioGroup>
+            </Col>
+            <Col md="4">
+              <RadioGroup
+                aria-label="paymemtMethod"
+                name="paymemtMethod"
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+              >
+                <FormControlLabel value="cashOnDelivery" control={<Radio color="primary" />} label="Cash on Delivery" />
+              </RadioGroup>
+            </Col>
+          </Row>
+        </FormControl>
 
-          <Button type="submit" variant="contained" color="primary" fullWidth>
-            Continue
-          </Button>
-        </Form>
-      </div>
+        <Button type="submit" variant="contained" color="primary" fullWidth>
+          Continue
+        </Button>
+      </Form>
     </FormContainer>
   );
 };

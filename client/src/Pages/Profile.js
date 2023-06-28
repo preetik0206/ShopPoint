@@ -70,14 +70,6 @@ const Profile = () => {
                 </Col>
               </Row>
             </ListGroup.Item>
-            <ListGroup.Item>
-              <Row>
-                <Col>Account:</Col>
-                <Col>
-                  <strong>{userInfo.verify ? 'Verified' : 'Not Verified'}</strong>
-                </Col>
-              </Row>
-            </ListGroup.Item>
             {/* <ListGroup.Item>
               <LinkContainer to="/updateUserDetails">
                 <MeterialButton
