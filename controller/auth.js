@@ -45,6 +45,23 @@ const login = asyncHandler(async (req, res, next) => {
   sendTokenResponse(user, 200, res);
 });
 
+const verificationEmail = asyncHandler(async (req, res, next) => {
+  const user = await User.findOne({
+    uid: req.body.verificationCode,
+  });
+
+  if (!user) throw createError(401, "Invalid verifaication code");
+
+  if (user.verify)
+    throw createError(401, "You have already verified. Login in to continue.");
+
+  user.verify = true;
+
+  await user.save({ validateBeforeSave: false });
+
+  sendTokenResponse(user, 200, res);
+});
+
 //Update user details
 
 const updateDetails = asyncHandler(async (req, res, next) => {
