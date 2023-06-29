@@ -32,8 +32,6 @@ const RegisterUser = asyncHandler(async (req, res, next) => {
 });
 
 const login = asyncHandler(async (req, res, next) => {
-  console.log('34 :>> ', 34);
-  console.log('test')
   const user = await User.findOne({
     email: req.body.email,
   }).select("+password");
@@ -191,5 +189,5 @@ module.exports = {
   updatePassword,
   forgotPassword,
   resetPassword,
-  verificationEmail,
+  verificationEmail,  
 };
