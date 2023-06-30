@@ -9,6 +9,9 @@ import * as routes from '../constants/routes';
 import { interpolate } from '../utils/string';
 import * as orderConstants from '../constants/orderConstants';
 import { Button, CircularProgress, makeStyles } from '@material-ui/core/';
+import axios from '../../node_modules/axios/index';
+import config from 'config';
+import http from 'utils/http';
 
 const useStyles = makeStyles((theme) => ({
   prgressColor: {
@@ -53,10 +56,7 @@ const PlaceOrder = ({ history }) => {
     }
     // eslint-disable-next-line
   }, [history, success]);
-
-  const placeOrderHandler = () => {
-    dispatch(
-      createOrder({
+  const body = {
         orderItems: cart.cartItems,
         shipping: cart.shippingAddress,
         payment: {
@@ -65,10 +65,99 @@ const PlaceOrder = ({ history }) => {
         itemsPrice: cart.itemsPrice,
         shippingPrice: cart.shippingPrice,
         taxPrice: cart.taxPrice,
-        totalPrice: cart.totalPrice,
-      })
-    );
+        totalPrice: parseInt(cart.totalPrice),
+      }
+
+  console.log('create', body)
+  const placeOrderHandler = () => {
+    // dispatch(
+    // createOrder({
+    //     orderItems: cart.cartItems,
+    //     shipping: cart.dress,
+    //     payment: {
+    //       paymentMethod: cart.paymentMethod,
+    //     },
+    //     itemsPrice: cart.itemsPrice,
+    //     shippingPrice: cart.shippingPrice,
+    //     taxPrice: cart.taxPrice,
+    //     totalPrice: cart.totalPrice,
+    //   })
+    // );
+    displayRazorpay()
   };
+
+  function loadScript(src) {
+    return new Promise((resolve) => {
+        const script = document.createElement("script");
+        script.src = src;
+        script.onload = () => {
+            resolve(true);
+        };
+        script.onerror = () => {
+            resolve(false);
+        };
+        document.body.appendChild(script);
+    });
+  }
+
+  async function displayRazorpay() {
+    const res = await loadScript(
+        "https://checkout.razorpay.com/v1/checkout.js"
+    );
+
+    if (!res) {
+        alert("Razorpay SDK failed to load. Are you online?");
+        return;
+    }
+    console.log('108 :>> ', 108);
+    // creating a new order
+    console.log('create', body)
+    const result = await http.post(config.apiEndPoint.order.createOrder, { body, accessToken: true });
+    console.log('result', result.data)
+    if (!result) {
+        alert("Server error. Are you online?");
+        return;
+    }
+
+    // Getting the order details back
+    const { amount, id: order_id } = result.data;
+
+    const options = {
+        key: process.env.RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
+        amount: amount,
+        currency: 'INR',
+        name: "Shop Point.",
+        description: "Test Transaction",
+        // image: { logo },
+        order_id: order_id,
+        // handler: async function (response) {
+        //     const data = {
+        //         orderCreationId: 'asdasdasd',
+        //         razorpayPaymentId: response.razorpay_payment_id,
+        //         razorpayOrderId: response.razorpay_order_id,
+        //         razorpaySignature: response.razorpay_signature,
+        //     };
+
+        //     const result = await axios.post("http://localhost:5000/payment/success", data);
+
+        //     alert(result.data.msg);
+        // },
+        prefill: {
+            name: "Shop Point",
+            email: "shoppoint@example.com",
+            contact: "123456789",
+        },
+        notes: {
+            address: "Shop Point Private Limited",
+        },
+        theme: {
+            color: "#61dafb",
+        },
+    };
+
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
+}
 
   return (
     <>

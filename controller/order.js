@@ -43,14 +43,36 @@ const getOrder = asyncHandler(async (req, res, next) => {
 });
 
 const createOrder = asyncHandler(async (req, res, next) => {
-  const newOrder = await Order.create({
-    ...req.body,
-    userId: req.user._id,
-  });
-
-  res
-    .status(201)
-    .send({ status: "success", message: "New Order Created", data: newOrder });
+  try {
+    const currency = 'INR'
+    const amount = req.body.totalPrice
+    const options = {
+      amount: parseInt(amount),
+      currency,
+      notes : {
+        "userId" : `${req.user._id}`
+      }
+    }
+    console.log('req.user._id :>> ', req.user._id);
+    const order = await razorpay.orders.create(options)
+    // const fetchOrder = await razorpay.orders.fetch(order.id) 
+    // console.log('fetchOrder :>> ', fetchOrder);
+    // parseInt(req.body)
+    const newOrder = await Order.create({
+      orderId: order.id,
+      ...req.body,
+      userId: req.user._id,
+    });
+  
+    res
+      .status(201)
+      .send({ 
+        amount :newOrder.totalPrice,
+        order_id : newOrder.orderId
+        });
+  } catch (error) {
+    console.log('error :>> ', error);
+  }
 });
 
 const payment = asyncHandler(async (req, res, next) => {
