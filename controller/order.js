@@ -1,6 +1,13 @@
 const asyncHandler = require("../middleware/async");
 const createError = require("../utilis/createError");
 const Order = require("../models/Order");
+const Razorpay = require('razorpay');
+const { options } = require("mongoose");
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 const getOrders = asyncHandler(async (req, res, next) => {
   res.status(200).send(res.advanceResults);

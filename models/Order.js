@@ -51,6 +51,11 @@ const orderItemSchema = new mongoose.Schema({
 });
 
 const OrderSchema = new mongoose.Schema({
+  orderId :{
+    type: String,
+    required: [true, 'User Id not specified']
+  },
+
   orderItems: [orderItemSchema],
   shipping: ShippingSchema,
   payment: PaymentSchema,
