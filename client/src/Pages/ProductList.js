@@ -21,6 +21,8 @@ import { interpolate } from '../utils/string';
 import * as productConstants from '../constants/productConstants';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
+import config from 'config';
+import axios from '../../node_modules/axios/index';
 
 const useStyles = makeStyles((theme) => ({
   typography: {
@@ -64,7 +66,9 @@ const ProductList = () => {
   const [openForm, setOpenForm] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
 
-  useEffect(() => {
+  useEffect( () => { 
+    createProduct()
+    console.log(createProduct);
     if (createSuccess) {
       setOpenForm(false);
       setName('');
@@ -90,11 +94,41 @@ const ProductList = () => {
     // eslint-disable-next-line
   }, [dispatch, success]);
 
+  const createProduct = async () => {
+    const body = {
+      name,
+      category,
+      description,
+      brand,
+      price,
+      countInStock
+    }
+    const createProduct = await axios.post({
+      body,
+      accessToken: true,
+    })
+    console.log(createProduct);
+  }
+
   const cancelCreateProduct = () => {
     setOpenForm(false);
   };
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
+    const product = {
+      name,
+      category,
+      description,
+      brand,
+      price,
+      countInStock
+    }
+    const createProduct = await axios.post(config.apiEndPoint.product.createProduct, {
+      product,
+      accessToken : true
+    })
+    console.log(createProduct);
+    console.log(98);
     e.preventDefault();
     if (
       name === '' ||
@@ -205,39 +239,6 @@ const ProductList = () => {
                         value={countInStock}
                         onChange={(e) => setCountInStock(Number(e.target.value))}
                       />
-                    </Col>
-                  </Row>
-
-                  <Row>
-                    <Col xs={12} md={6}>
-                      <TextField
-                        variant="outlined"
-                        type="file"
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="file"
-                        name="file"
-                        autoComplete="file"
-                        autoFocus
-                        onChange={(e) => setProductImage(e.target.files[0])}
-                      />
-                    </Col>
-                    <Col xs={12} md={6}>
-                      <FormControl variant="outlined" className={classes.formControl}>
-                        <InputLabel id="demo-simple-select-outlined-label">Category</InputLabel>
-                        <Select
-                          labelId="demo-simple-select-outlined-label"
-                          id="demo-simple-select-outlined"
-                          onChange={(e) => setCategory(e.target.value)}
-                          label="Category"
-                          value={category}
-                        >
-                          <MenuItem value="Shirt">T-shirt</MenuItem>
-                          <MenuItem value="Pants">Pant</MenuItem>
-                          <MenuItem value="Vest">Vest</MenuItem>
-                        </Select>
-                      </FormControl>
                     </Col>
                   </Row>
                   <Row>

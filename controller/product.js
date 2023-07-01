@@ -46,7 +46,8 @@ const getProduct = asyncHandler(async (req, res, next) => {
 });
 
 const createProduct = asyncHandler(async (req, res, next) => {
-  if (!req.files) throw createError(400, "Please add a photo");
+  console.log(50);
+  // if (!req.files) throw createError(400, "Please add a photo");
 
   console.log(req.files);
 

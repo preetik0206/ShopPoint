@@ -123,7 +123,7 @@ const PlaceOrder = ({ history }) => {
     const { amount, id: order_id } = result.data;
 
     const options = {
-        key: process.env.RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
+        key: process.env.REACT_APP_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
         amount: amount,
         currency: 'INR',
         name: "Shop Point.",
