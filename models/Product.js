@@ -7,10 +7,10 @@ const ProductSchema = new mongoose.Schema(
       required: [true, "Product Name is required"],
       trim: true,
     },
-    productImage: {
-      type: String,
-      // required: [true, "Image is required"],
-    },
+    // productImage: {
+    //   type: String,
+    //   // required: [true, "Image is required"],
+    // },
     brand: {
       type: String,
       required: [true, "Brand is required"],
@@ -20,10 +20,10 @@ const ProductSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Price is required"],
     },
-    category: {
-      type: String,
-      required: [true, "Category is required"],
-    },
+    // category: {
+    //   type: String,
+    //   required: [true, "Category is required"],
+    // },
     countInStock: {
       type: Number,
       default: 0,

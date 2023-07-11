@@ -27,7 +27,7 @@ router
     }),
     getProducts
   )
-  .post(protect, permission("admin"), createProduct);
+  .post(createProduct);
 
 router.use("/:productId/reviews", reviewRouter);
 

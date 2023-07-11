@@ -1,28 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { LinkContainer } from 'react-router-bootstrap';
-import { Table, Button, Row, Col, Modal, Form, Container } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import ErrorMessage from '../components/Message/errorMessage';
-import SuccessMessage from '../components/Message/successMessage';
-import TableLoader from '../components/Loader/TableLoader';
-import {
-  Button as MaterialButton,
-  TextField,
-  CircularProgress,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  makeStyles,
-} from '@material-ui/core/';
-import { productListForAdmin, deleteProduct, createProduct } from '../actions/productAction';
-import * as routes from '../constants/routes';
-import { interpolate } from '../utils/string';
-import * as productConstants from '../constants/productConstants';
+import React  from 'react';
+import { Button as MaterialButton, CircularProgress, makeStyles, TextField } from '@material-ui/core/';
+import config from 'config';
+import { useEffect, useState } from 'react';
+import { Button, Col, Container, Form, Modal, Row, Table } from 'react-bootstrap';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import config from 'config';
+import { useDispatch, useSelector } from 'react-redux';
+import { LinkContainer } from 'react-router-bootstrap';
 import axios from '../../node_modules/axios/index';
+import { deleteProduct, productListForAdmin } from '../actions/productAction';
+import TableLoader from '../components/Loader/TableLoader';
+import ErrorMessage from '../components/Message/errorMessage';
+import SuccessMessage from '../components/Message/successMessage';
+import * as productConstants from '../constants/productConstants';
+import * as routes from '../constants/routes';
+import { interpolate } from '../utils/string';
+import { Input } from '../../node_modules/@material-ui/core/index';
+
 
 const useStyles = makeStyles((theme) => ({
   typography: {
@@ -66,9 +60,10 @@ const ProductList = () => {
   const [openForm, setOpenForm] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
 
-  useEffect( () => { 
-    createProduct()
-    console.log(createProduct);
+  useEffect(() => {
+    // createProduct();
+    submitHandler()
+    // console.log(createProduct);
     if (createSuccess) {
       setOpenForm(false);
       setName('');
@@ -94,41 +89,43 @@ const ProductList = () => {
     // eslint-disable-next-line
   }, [dispatch, success]);
 
-  const createProduct = async () => {
-    const body = {
-      name,
-      category,
-      description,
-      brand,
-      price,
-      countInStock
-    }
-    const createProduct = await axios.post({
-      body,
-      accessToken: true,
-    })
-    console.log(createProduct);
-  }
+  // const createProduct = async () => {
+  //   console.log('92', 92)
+  //   const body = {
+  //     name,
+  //     category,
+  //     productImage,
+  //     description,
+  //     brand,
+  //     price,
+  //     countInStock,
+  //   };
+  //   const createProduct = await axios.post({
+  //     body,
+  //     accessToken: true,
+  //   });
+  // };
 
   const cancelCreateProduct = () => {
     setOpenForm(false);
   };
 
   const submitHandler = async (e) => {
+    console.log('113 :>> ', 113);
     const product = {
       name,
       category,
       description,
+      productImage,
       brand,
       price,
-      countInStock
-    }
+      countInStock,
+    };
     const createProduct = await axios.post(config.apiEndPoint.product.createProduct, {
       product,
-      accessToken : true
-    })
-    console.log(createProduct);
-    console.log(98);
+      accessToken: true,
+    });
+
     e.preventDefault();
     if (
       name === '' ||
@@ -154,13 +151,28 @@ const ProductList = () => {
     dispatch(createProduct(formData));
   };
 
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const base64 = reader.result;
+      console.log('base64 :>> ', base64);
+      setProductImage(base64);
+    };
+    console.log('productImage', productImage)
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+
   const openNewProductForm = () => {
     if (openForm) {
       return (
         <>
           <Modal show={openForm} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
             <Modal.Header>
-              <Modal.Title id="contained-modal-title-vcenter">Add Product</Modal.Title>
+              <Modal.Title id="contained-modal-title-vcenter"> </Modal.Title>
             </Modal.Header>
             {createFail && (
               <ErrorMessage
@@ -242,7 +254,10 @@ const ProductList = () => {
                     </Col>
                   </Row>
                   <Row>
-                    <Col xs={12} md={12}>
+                    <Col xs={12} md={6}>
+                      <Input type="file" onChange={handleImageUpload} />
+                    </Col>
+                    <Col xs={12} md={6}>
                       <TextField
                         variant="outlined"
                         type="text"
