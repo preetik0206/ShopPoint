@@ -47,8 +47,9 @@ const getProduct = asyncHandler(async (req, res, next) => {
 
 const createProduct = asyncHandler(async (req, res, next) => {
   try { 
-  console.log('req.body :>> ', req.body);
+  // console.log('req.body :>> ', req.body);
   const productData = req.body.product
+  // console.log('productData', productData)
   const product = await Product.create(
     productData,
   );

@@ -111,6 +111,9 @@ const ProductList = () => {
   };
 
   const submitHandler = async (e) => {
+    if(e){
+      console.log('e', e)
+    }
     console.log('113 :>> ', 113);
     const product = {
       name,
@@ -126,7 +129,7 @@ const ProductList = () => {
       accessToken: true,
     });
 
-    e.preventDefault();
+    // e.preventDefault();
     if (
       name === '' ||
       category === '' ||
