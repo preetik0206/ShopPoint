@@ -2,7 +2,6 @@ const asyncHandler = require("../middleware/async");
 const createError = require("../utilis/createError");
 const Order = require("../models/Order");
 const Razorpay = require('razorpay');
-const { options } = require("mongoose");
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -44,26 +43,39 @@ const getOrder = asyncHandler(async (req, res, next) => {
 
 const createOrder = asyncHandler(async (req, res, next) => {
   try {
+    const user = req.body.user
     const currency = 'INR'
-    const amount = req.body.totalPrice
+    const amount = req.body.reqbody.totalPrice
     const options = {
       amount: parseInt(amount),
       currency,
       notes : {
-        "userId" : `${req.user._id}`
+        "userId" : `${user.id}`
       }
     }
-    console.log('req.user._id :>> ', req.user._id);
+    // console.log('req.body.reqbody :>> ', req.body.reqbody);
     const order = await razorpay.orders.create(options)
+    // console.log('order', order)
     // const fetchOrder = await razorpay.orders.fetch(order.id) 
     // console.log('fetchOrder :>> ', fetchOrder);
     // parseInt(req.body)
-    const newOrder = await Order.create({
-      orderId: order.id,
-      ...req.body,
-      userId: req.user._id,
-    });
-  
+    const createOrder = {
+      orderId : order.id,
+      orderItems : req.body.reqbody.orderItems,
+      shipping : req.body.reqbody.shipping,
+      payment : req.body.reqbody.payment,
+      itemsPrice: '2000.00',
+      shippingPrice: '0.00',
+      taxPrice: '300.00',
+      totalPrice: 2300,
+      userId : user.id
+    }
+    // console.log('64 :>> ', 64);
+    const newOrder = await Order.create(
+      createOrder
+    );
+    // console.log('70 :>> ', 70);
+    
     res
       .status(201)
       .send({ 

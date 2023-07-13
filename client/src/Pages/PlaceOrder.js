@@ -48,6 +48,11 @@ const PlaceOrder = ({ history }) => {
   const orderCreate = useSelector((state) => state.createOrder);
   const { order, success, error, loading } = orderCreate;
 
+  const getCurrentUser = () => {
+    const storedUser = localStorage.getItem('userInfo');
+    return storedUser ? JSON.parse(storedUser) : null;
+  };
+
   useEffect(() => {
     if (success) {
       history.push({
@@ -56,19 +61,26 @@ const PlaceOrder = ({ history }) => {
     }
     // eslint-disable-next-line
   }, [history, success]);
-  const body = {
-        orderItems: cart.cartItems,
-        shipping: cart.shippingAddress,
-        payment: {
-          paymentMethod: cart.paymentMethod,
-        },
-        itemsPrice: cart.itemsPrice,
-        shippingPrice: cart.shippingPrice,
-        taxPrice: cart.taxPrice,
-        totalPrice: parseInt(cart.totalPrice),
-      }
 
-  console.log('create', body)
+  let reqbody
+  useEffect(() => {
+    const user = getCurrentUser()
+    console.log('user :>> ', user);
+  },[])
+  
+  reqbody = {
+    orderItems: cart.cartItems,
+    shipping: cart.shippingAddress,
+    payment: {
+      paymentMethod: cart.paymentMethod,
+    },
+    itemsPrice: cart.itemsPrice,
+    shippingPrice: cart.shippingPrice,
+    taxPrice: cart.taxPrice,
+    totalPrice: parseInt(cart.totalPrice),
+  };
+
+  // console.log('create', body)
   const placeOrderHandler = () => {
     // dispatch(
     // createOrder({
@@ -111,8 +123,16 @@ const PlaceOrder = ({ history }) => {
     }
     console.log('108 :>> ', 108);
     // creating a new order
-    console.log('create', body)
-    const result = await http.post(config.apiEndPoint.order.createOrder, { body, accessToken: true });
+        const user = getCurrentUser()
+    console.log('user :>> ', user);
+    // console.log('create', body)
+
+    const body = {
+      reqbody,
+      user
+    }
+
+    const result = await http.post(config.apiEndPoint.order.createOrder, { body , accessToken: true, user });
     console.log('result', result.data)
     if (!result) {
         alert("Server error. Are you online?");

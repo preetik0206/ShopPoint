@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { PayPalButton } from 'react-paypal-button-v2';
+
+// import { PayPalButton } from 'react-paypal-button-v2';
 import { Link } from 'react-router-dom';
 import { Row, Col, ListGroup, Image, Card } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,6 +27,7 @@ const Order = ({ match }) => {
   const orderDetails = useSelector((state) => state.orderDetails);
   const { order, loading, error, success } = orderDetails;
 
+
   const orderPay = useSelector((state) => state.orderPay);
   const { loading: loadingPay, success: successPayMessage } = orderPay;
 
@@ -39,50 +41,102 @@ const Order = ({ match }) => {
 
   const refId = queryParams.get('refId') ? queryParams.get('refId').trim() : null;
 
-  useEffect(() => {
-    const addPayPalScript = async () => {
-      const { data: clientId } = await axios.get('/api/config/paypal');
-      const script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`;
-      script.async = true;
-      script.onload = () => {
-        setSdkReady(true);
-      };
-      document.body.appendChild(script);
+  // useEffect(() => {
+  //   console.log('order :>> ', order);
+
+  //   // const addPayPalScript = async () => {
+  //   //   const { data: clientId } = await axios.get('/api/config/paypal');
+  //   //   const script = document.createElement('script');
+  //   //   script.type = 'text/javascript';
+  //   //   script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`;
+  //   //   script.async = true;
+  //   //   script.onload = () => {
+  //   //     setSdkReady(true);
+  //   //   };
+  //   //   document.body.appendChild(script);
+  //   // };
+
+  //   // if (order && !order.isPaid) {
+  //   //   if (!window.paypal) {
+  //   //     addPayPalScript();
+  //   //   } else {
+  //   //     setSdkReady(true);
+  //   //   }
+  //   // }
+  //   // eslint-disable-next-line
+  // }, [dispatch, orderId, successPayMessage, successDeliver, order]);
+
+  // useEffect(() => {
+  //   dispatch({ type: ORDER_PAY_RESET });
+  //   dispatch({ type: ORDER_DELIVER_RESET });
+  //   dispatch(getOrder(orderId, initialLoading));
+
+  //   // eslint-disable-next-line
+  // }, [dispatch, successPayMessage, successDeliver, refId]);
+
+  // useEffect(() => {
+  //   if (success && initialLoading) {
+  //     setInitialLoading(false);
+  //   }
+  //   // eslint-disable-next-line
+  // }, [dispatch, success]);
+
+  // useEffect(() => {
+  //   if (refId) {
+  //     dispatch(payOrder(orderId));
+  //   }
+  //   // eslint-disable-next-line
+  // }, [refId]);
+
+  const initializeRazorpay = () => {
+    const options = {
+      key: process.env.REACT_APP_RAZORPAY_KEY_ID,
+      amount: order.totalPrice,
+      currency: 'INR',
+      name: 'Shop Point',
+      // description: 'Purchase Description',
+      handler: (response) => {
+        handlePaymentResponse(response);
+      },
+      prefill: {
+        name: 'Shoppoint',
+        email: 'shoponpoint@gmail.com',
+      },
     };
 
-    if (order && !order.isPaid) {
-      if (!window.paypal) {
-        addPayPalScript();
-      } else {
-        setSdkReady(true);
-      }
-    }
-    // eslint-disable-next-line
-  }, [dispatch, orderId, successPayMessage, successDeliver, order]);
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  };
 
+  const getCurrentUser = () => {
+    const storedUser = localStorage.getItem('currentUser');
+    return storedUser ? JSON.parse(storedUser) : null;
+  };
   useEffect(() => {
-    dispatch({ type: ORDER_PAY_RESET });
-    dispatch({ type: ORDER_DELIVER_RESET });
-    dispatch(getOrder(orderId, initialLoading));
+    console.log('116', 116)
+    const user = getCurrentUser()
+    console.log('user', user)
 
-    // eslint-disable-next-line
-  }, [dispatch, successPayMessage, successDeliver, refId]);
+    const loadScript = () => {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      script.onload = initializeRazorpay;
+      document.body.appendChild(script);
+    };
+    loadScript();
+  }, []);
 
-  useEffect(() => {
-    if (success && initialLoading) {
-      setInitialLoading(false);
-    }
-    // eslint-disable-next-line
-  }, [dispatch, success]);
-
-  useEffect(() => {
-    if (refId) {
-      dispatch(payOrder(orderId));
-    }
-    // eslint-disable-next-line
-  }, [refId]);
+  const handlePaymentResponse = (response) => {
+    axios
+    .post(config.apiEndPoint.order.createOrder, response)
+      .then((res) => {
+        console.log(res.data); // Handle the response from the server
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const successPaymentHandler = (paymentResult) => {
     dispatch(payOrder(orderId, paymentResult));
@@ -90,42 +144,6 @@ const Order = ({ match }) => {
 
   const deliverHandler = () => {
     dispatch(deliverOrder(order._id));
-  };
-
-  const payWithEsewa = () => {
-    var resultId = '';
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for (var i = 0; i < 14; i++) {
-      resultId += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-
-    var path = config.esewaPaymentUrl;
-    var params = {
-      amt: order.itemsPrice,
-      psc: order.shippingPrice,
-      pdc: 0,
-      txAmt: order.taxPrice,
-      tAmt: order.totalPrice,
-      pid: resultId,
-      scd: 'EPAYTEST',
-      su: `http://localhost:3000/order/${orderId}`,
-      fu: `http://localhost:3000/order/${orderId}`,
-    };
-    var form = document.createElement('form');
-    form.setAttribute('method', 'POST');
-    form.setAttribute('action', path);
-
-    Object.keys(params).forEach((key) => {
-      var hiddenField = document.createElement('input');
-      hiddenField.setAttribute('type', 'hidden');
-      hiddenField.setAttribute('name', key);
-      hiddenField.setAttribute('value', params[key]);
-      form.appendChild(hiddenField);
-    });
-
-    document.body.appendChild(form);
-    form.submit();
   };
 
   return loading ? (
@@ -238,24 +256,19 @@ const Order = ({ match }) => {
                       <Col>${order.totalPrice}</Col>
                     </Row>
                   </ListGroup.Item>
-                  {order.payment && order.payment.paymentMethod === 'PayPal' && !order.isPaid && (
+                  {order.payment && order.payment.paymentMethod === 'RazorPay' && !order.isPaid && (
                     <ListGroup.Item>
                       {loadingPay && <Loader />}
                       {!sdkReady ? (
                         <Loader />
                       ) : (
-                        <PayPalButton amount={order.totalPrice} onSuccess={successPaymentHandler} />
-                      )}
+                        <button onClick={initializeRazorpay}>Pay Now</button>
+                      )
+                      }
+                        {/* <PayPalButton amount={order.totalPrice} onSuccess={successPaymentHandler} /> */}
                     </ListGroup.Item>
                   )}
-                  {order.payment && order.payment.paymentMethod === 'esewa' && !order.isPaid && (
-                    <ListGroup.Item>
-                      <Button variant="outlined" color="primary" fullWidth onClick={payWithEsewa}>
-                        <Image src={config.esewaImageUrl} alt="esewa" fluid rounded />
-                      </Button>
-                    </ListGroup.Item>
-                  )}
-
+                  
                   {loadingDeliver && <Loader />}
                   {userInfo && userInfo.role === 'admin' && order.isPaid && !order.isDelivered && (
                     <ListGroup.Item>
