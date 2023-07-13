@@ -72,9 +72,11 @@ export const deliverOrder = async (id) => {
  * @returns {Array} data
  */
 export const userOrder = async () => {
+  console.log('75 :>> ', 75);
   const { data } = await http.get(config.apiEndPoint.order.userOrder, {
     accessToken: true,
   });
+  console.log('data', data)
 
   return data;
 };

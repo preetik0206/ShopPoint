@@ -7,6 +7,7 @@ const {
   deleteOrder,
   payment,
   deliverOrder,
+  getOrdersForUsers,
 } = require("../controller/order");
 
 //Invoked middleware.
@@ -34,7 +35,7 @@ router
   )
   .post(createOrder);
 router.route("/auth-orders").get(authOrder);
-
+router.route("/getOrdersForUser").post(getOrdersForUsers)
 router.route("/:orderId").get(getOrder).put(updateOrder).delete(deleteOrder);
 
 router.route("/:orderId/pay").post(payment);

@@ -12,10 +12,12 @@ const getOrders = asyncHandler(async (req, res, next) => {
   res.status(200).send(res.advanceResults);
 });
 const authOrder = asyncHandler(async (req, res, next) => {
-  const authOrders = await Order.find({ userId: req.user._id }).populate({
+  console.log('req.user.id :>> ', req.user.id);
+  const authOrders = await Order.find({ userId: req.user.id }).populate({
     path: "userId",
     select: "name email",
   });
+  console.log('authOrders :>> ', authOrders);
   return res.status(200).send({
     status: "success",
     count: authOrders.length,
@@ -40,6 +42,17 @@ const getOrder = asyncHandler(async (req, res, next) => {
     data: findOrder,
   });
 });
+
+const getOrdersForUsers = asyncHandler(async (req, res, next) => {
+  const userId = req.body.userId
+
+  const Orders = await Order.find({userId})
+  console.log('Orders', Orders)
+  res.status(200).send({
+    status: "success",
+    data: Orders,
+  });
+})
 
 const createOrder = asyncHandler(async (req, res, next) => {
   try {
@@ -206,4 +219,5 @@ module.exports = {
   deleteOrder,
   payment,
   deliverOrder,
+  getOrdersForUsers
 };
