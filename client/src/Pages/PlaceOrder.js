@@ -150,22 +150,28 @@ const PlaceOrder = ({ history }) => {
         description: "Test Transaction",
         // image: { logo },
         order_id: order_id,
-        // handler: async function (response) {
-        //     const data = {
-        //         orderCreationId: 'asdasdasd',
-        //         razorpayPaymentId: response.razorpay_payment_id,
-        //         razorpayOrderId: response.razorpay_order_id,
-        //         razorpaySignature: response.razorpay_signature,
-        //     };
-
-        //     const result = await axios.post("http://localhost:5000/payment/success", data);
-
-        //     alert(result.data.msg);
-        // },
+        handler: async function (response) {
+            alert('succesful')
+            
+            // const data = {
+            //     orderCreationId: order_id,
+            //     razorpayPaymentId: response.razorpay_payment_id,
+            //     razorpayOrderId: response.razorpay_order_id,
+            //     razorpaySignature: response.razorpay_signature,
+            // };
+            // try {
+            //   const result = await axios.post("http://localhost:5000/payment/success", data);
+  
+            //   alert(result.data.msg);
+              
+            // } catch (error) {
+            //   alert(error.message)  
+            // }
+        },
         prefill: {
-            name: "Shop Point",
-            email: "shoppoint@example.com",
-            contact: "123456789",
+            name: "",
+            email: user.email,
+            contact: "",
         },
         notes: {
             address: "Shop Point Private Limited",
@@ -176,6 +182,7 @@ const PlaceOrder = ({ history }) => {
     };
 
     const paymentObject = new window.Razorpay(options);
+    console.log('179', 179)
     paymentObject.open();
 }
 
