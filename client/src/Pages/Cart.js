@@ -62,7 +62,7 @@ const Cart = ({ history }) => {
                       {item.productName}
                     </Link>
                   </Col>
-                  <Col md={2}>${item.price}</Col>
+                  <Col md={2}>₹{item.price}</Col>
                   <Col md={2}>
                     <FormControl className={classes.formControl}>
                       <Select
@@ -95,7 +95,7 @@ const Cart = ({ history }) => {
         <Card>
           <ListGroup variant="flush">
             <ListGroup.Item>
-              <h2>Subtotal ({cartItems.reduce((acc, item) => acc + item.qty, 0)}) items</h2>$
+              <h2>Subtotal ({cartItems.reduce((acc, item) => acc + item.qty, 0)}) items</h2>₹
               {cartItems.reduce((acc, item) => acc + item.qty * item.price, 0).toFixed(2)}
             </ListGroup.Item>
             <ListGroup.Item>
