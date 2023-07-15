@@ -7,7 +7,6 @@ const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
-
 const getOrders = asyncHandler(async (req, res, next) => {
   res.status(200).send(res.advanceResults);
 });
@@ -56,6 +55,8 @@ const getOrdersForUsers = asyncHandler(async (req, res, next) => {
 
 const createOrder = asyncHandler(async (req, res, next) => {
   try {
+    console.log(process.env.RAZORPAY_KEY_ID,process.env.RAZORPAY_KEY_SECRET)
+console.log(req.body.reqbody)
     const user = req.body.user
     const currency = 'INR'
     const amount = req.body.reqbody.totalPrice
@@ -77,10 +78,10 @@ const createOrder = asyncHandler(async (req, res, next) => {
       orderItems : req.body.reqbody.orderItems,
       shipping : req.body.reqbody.shipping,
       payment : req.body.reqbody.payment,
-      itemsPrice: '2000.00',
-      shippingPrice: '0.00',
-      taxPrice: '300.00',
-      totalPrice: 2300,
+      itemsPrice: req.body.reqbody.itemsPrice,
+      shippingPrice: req.body.reqbody.shippingPrice,
+      taxPrice: req.body.reqbody.taxPrice,
+      totalPrice: req.body.reqbody.totalPrice,
       userId : user.id
     }
     // console.log('64 :>> ', 64);
